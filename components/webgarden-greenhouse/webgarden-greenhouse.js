@@ -99,8 +99,7 @@ class WebgardenGreenhouse extends HTMLElement {
     // Render the component
     this.render();
 
-    // Add the component to the Shadow DOM
-    this.shadowRoot.appendChild(greenhouse_gardens);
+    // Component is now connected
     this._connected = true;
   }
 
@@ -152,17 +151,18 @@ class WebgardenGreenhouse extends HTMLElement {
   renderGreenhouse() {
     this._greenhouse.textContent = ""; // clear all the rows
 
-    const greenhouse_rows = this.renderRows();
-    greenhouse_rows.forEach((greenhouse_row) => {
-      this._greenhouse.appendChild(greenhouse_row);
+    const greenhouseRows = this.renderRows();
+    greenhouseRows.forEach((greenhouseRow) => {
+      this._greenhouse.appendChild(greenhouseRow);
     });
   }
 
   render() {
     // Add the top-level div only once when connecting
     if (!this._connected) {
-      const greenhouse_gardens = template.content.cloneNode(true);
-      this._greenhouse = greenhouse_gardens.getElementById("greenhouse");
+      const greenhouseGardens = template.content.cloneNode(true);
+      this._greenhouse = greenhouseGardens.getElementById("greenhouse");
+      this.shadowRoot.appendChild(greenhouseGardens);
     }
 
     // Render the greenhouse
