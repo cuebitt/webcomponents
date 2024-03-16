@@ -4,7 +4,7 @@ This web component is used to display a counter widget that visitors can increme
 
 # Preview
 
-![component preview](/components/increasr/meta/preview.png)
+![component preview](/components/increasr-frame/meta/preview.png)
 
 # Usage
 
