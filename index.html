@@ -9,37 +9,9 @@
       src="components/webgarden-greenhouse/webgarden-greenhouse.js"
     ></script>
   </head>
-  <body>
-    <!-- plants='cuebitt,cuebitt,cuebitt,cuebitt' -->
-    <webgarden-greenhouse id="garden"></webgarden-greenhouse>
-    <button onclick="addNew()">Add new</button>
-    <button onclick="addNew(`https://cuebitt.neocities.org/webgarden.html`)">
-      Add by URL
-    </button>
-
-    <script>
-      window.greenhouse_test = "";
-      document.getElementById("garden").plants = window.greenhouse_test;
-
-      function addNew(plant) {
-        if (!plant) {
-          plant = "cuebitt";
-        }
-
-        console.log("adding plant: ", plant);
-
-        if (window.greenhouse_test === "") {
-          window.greenhouse_test += plant;
-        } else {
-          window.greenhouse_test += `,${plant}`;
-        }
-        console.log(window.greenhouse_test);
-        document
-          .getElementById("garden")
-          .setAttribute("plants", window.greenhouse_test);
-      }
-
-      window.addNew = addNew;
-    </script>
+  <body style="padding-top: 4em">
+    <webgarden-greenhouse
+      plants="cuebitt,https://cuebitt.neocities.org/webgarden.html,cuebitt"
+    ></webgarden-greenhouse>
   </body>
 </html>
