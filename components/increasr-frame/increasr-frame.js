@@ -38,7 +38,7 @@ class IncreasrFrame extends HTMLElement {
 
     this.attachShadow({ mode: "open" });
 
-    this._element = document.getElementById("increasr-frame-inner");
+    this._element = null;
     this._connected = false;
     this._siteKey = null;
   }
