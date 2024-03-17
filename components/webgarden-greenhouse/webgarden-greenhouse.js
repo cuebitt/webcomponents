@@ -36,53 +36,21 @@ PERFORMANCE OF THIS SOFTWARE.
         [ex. cuebitt] or a URL to a Webgarden pot [ex https://cuebitt.neocities.org/webgarden.html].)
 */
 
-const template = document.createElement("template");
-template.innerHTML = `
-
-<!-- shelves.css by missmoss.neocities.org -->
-<style>
-.shelf {
-  display: block;
-  z-index: 9;
-  content: url("https://files.catbox.moe/s1apr5.png");
-  position: relative;
-  width: 941px;
-  height: 175px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.stuffonshelf {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  position: relative;
-  z-index: 10;
-  margin-bottom: -80px;
-  width: 770px;
-  margin-left: auto;
-  margin-right: auto;
-}
-</style>
-
-<div id="greenhouse"></div>
-`;
-
-// template used to render the rows
-const rowTemplate = document.createElement("template");
-rowTemplate.innerHTML = `
-<div class="stuffonshelf" id="row-shelf">
-</div>
-<img class="shelf">
-`;
+// https://youmightnotneed.com/lodash/#chunk
+const chunk = (arr, chunkSize = 1, cache = []) => {
+  const tmp = [...arr];
+  if (chunkSize <= 0) return cache;
+  while (tmp.length) cache.push(tmp.splice(0, chunkSize));
+  return cache;
+};
 
 class WebgardenGreenhouse extends HTMLElement {
   constructor() {
     super();
     this._connected = false;
-    this._greenhouse = null;
+    this._element = null;
 
-    this.plants = [];
+    this._plants = [];
 
     this.attachShadow({ mode: "open" });
   }
@@ -93,8 +61,16 @@ class WebgardenGreenhouse extends HTMLElement {
 
   connectedCallback() {
     // Init props from attributes
-    const _plantsAttr = this.getAttribute("plants");
-    this.plants = _plantsAttr ? _plantsAttr.split(",") : [];
+    this._plants = this.hasAttribute("plants")
+      ? this.getAttribute("plants").split(",")
+      : [];
+
+    // Add the top-level div only once when connecting
+    const greenhouseGardens = document.createElement("template");
+    greenhouseGardens.innerHTML = WebgardenGreenhouse.template();
+    this.shadowRoot.appendChild(greenhouseGardens.content.cloneNode(true));
+
+    this._element = this.shadowRoot.getElementById("greenhouse");
 
     // Render the component
     this.render();
@@ -110,33 +86,50 @@ class WebgardenGreenhouse extends HTMLElement {
     switch (name) {
       case "plants":
         console.log("Re-rendering greenhouse...");
-        this.plants = newVal.split(",");
-        this.renderGreenhouse();
+        this._plants = newVal.split(",");
+        this.render();
         break;
     }
   }
 
-  renderRows() {
-    if (this.plants.size === 0) return;
+  render() {
+    this._element.textContent = ""; // clear all the rows
 
-    const rowChunks = chunk(this.plants, 3);
+    // Skip rendering if there are no pots to render
+    if (this._plants.size === 0) return;
+
+    // Split the array into chunks of 3 to separate the shelves
+    const rowChunks = chunk(this._plants, 3);
+
+    // Templates used to construct the rows
+    const rowTmp = document.createElement("template");
+    rowTmp.innerHTML = `
+    <div class="stuffonshelf" id="row-shelf">
+    </div>
+    <img class="shelf">
+    `;
+
+    const rowItemTmp = document.createElement("template");
+    rowItemTmp.innerHTML = `
+    <iframe height = "250px" width="250px" loading="lazy" scrolling="no"></iframe>
+    `;
 
     const rows = rowChunks.map((rowChunk) => {
       const rowItems = rowChunk.map((plant) => {
         const shelfItem = document.createElement("iframe");
-        shelfItem.height = "250px";
-        shelfItem.width = "250px";
-        shelfItem.scrolling = "no";
+        shelfItem.height = shelfItem.width = "250px";
         shelfItem.loading = "lazy";
-        shelfItem.frameBorder = "no";
-        shelfItem.src = plant.includes(".")
+        shelfItem.scrolling = "no";
+
+        // Use a URL if provided, otherwise use a Neocities ID
+        shelfItem.src = /^(https?):\/\/[^\s/$.?#].[^\s]*$/i.test(plant)
           ? plant
           : `https://${plant}.neocities.org/webgarden.html`;
 
         return shelfItem;
       });
 
-      const row = rowTemplate.content.cloneNode(true);
+      const row = rowTmp.content.cloneNode(true);
       const rowShelf = row.getElementById("row-shelf");
       rowItems.forEach((rowItem) => {
         rowShelf.appendChild(rowItem);
@@ -145,37 +138,43 @@ class WebgardenGreenhouse extends HTMLElement {
       return row;
     });
 
-    return rows;
-  }
-
-  renderGreenhouse() {
-    this._greenhouse.textContent = ""; // clear all the rows
-
-    const greenhouseRows = this.renderRows();
-    greenhouseRows.forEach((greenhouseRow) => {
-      this._greenhouse.appendChild(greenhouseRow);
+    rows.forEach((row) => {
+      this._element.appendChild(row);
     });
   }
 
-  render() {
-    // Add the top-level div only once when connecting
-    if (!this._connected) {
-      const greenhouseGardens = template.content.cloneNode(true);
-      this._greenhouse = greenhouseGardens.getElementById("greenhouse");
-      this.shadowRoot.appendChild(greenhouseGardens);
-    }
+  static template() {
+    return /* html */ `
 
-    // Render the greenhouse
-    this.renderGreenhouse();
+    <!-- shelves.css by missmoss.neocities.org -->
+    <style>
+    .shelf {
+      display: block;
+      z-index: 9;
+      content: url("https://files.catbox.moe/s1apr5.png");
+      position: relative;
+      width: 941px;
+      height: 175px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .stuffonshelf {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: relative;
+      z-index: 10;
+      margin-bottom: -80px;
+      width: 770px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    </style>
+    
+    <div id="greenhouse"></div>
+    `;
   }
 }
-
-// https://youmightnotneed.com/lodash/#chunk
-const chunk = (arr, chunkSize = 1, cache = []) => {
-  const tmp = [...arr];
-  if (chunkSize <= 0) return cache;
-  while (tmp.length) cache.push(tmp.splice(0, chunkSize));
-  return cache;
-};
 
 window.customElements.define("webgarden-greenhouse", WebgardenGreenhouse);

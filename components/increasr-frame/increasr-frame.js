@@ -30,53 +30,55 @@ PERFORMANCE OF THIS SOFTWARE.
 
     2. Use the increasr-frame component anywhere in the page:
 
-        <increasr-frame sitekey="yourSitekeyHere"></increasr-frame>
+        <increasr-frame site-key="yourSitekeyHere"></increasr-frame>
 */
-
-// HTML Template
-const template = document.createElement("template");
-template.innerHTML = `
-<iframe id="inner-frame" src="//incr.easrng.net/badge?key=changeme" style="background: url(//incr.easrng.net/bg.gif)" title="increment badge" width="88" height="31" frameborder="0"></iframe>
-`;
-
-// iframe src helper fn
-const srcUrl = (key) => `//incr.easrng.net/badge?key=${key}`;
-
-// increasr-frame Web Component
 class IncreasrFrame extends HTMLElement {
   constructor() {
     super();
-    this._connected = false;
-
-    this.sitekey = "changeme";
 
     this.attachShadow({ mode: "open" });
+
+    this._element = document.getElementById("increasr-frame-inner");
+    this._connected = false;
+    this._siteKey = null;
   }
 
   connectedCallback() {
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this._siteKey = this.getAttribute("site-key") || "changeme";
 
+    const newTemplate = document.createElement("template");
+    newTemplate.innerHTML = IncreasrFrame.template();
+    this.shadowRoot.appendChild(newTemplate.content.cloneNode(true));
+    this._element = this.shadowRoot.getElementById("increasr-frame-inner");
+
+    this.render();
     this._connected = true;
-    const sitekey = this.getAttribute("sitekey");
-    if (sitekey !== null) {
-      this.shadowRoot
-        .getElementById("inner-frame")
-        .setAttribute("src", srcUrl(sitekey));
-    }
   }
 
   static get observedAttributes() {
-    return ["sitekey"];
+    return ["site-key"];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue || !this._connected) return;
 
-    if (name === "sitekey") {
-      this.shadowRoot
-        .getElementById("inner-frame")
-        .setAttribute("src", srcUrl(newValue));
+    switch (name) {
+      case "site-key":
+        this._siteKey = newValue;
+        this.render();
+        break;
     }
+  }
+
+  static template() {
+    return /* html */ `
+    <iframe id="increasr-frame-inner" src="//incr.easrng.net/badge?key=changeme" style="background: url(//incr.easrng.net/bg.gif)" title="increment badge" width="88" height="31" frameborder="0"></iframe>
+    `;
+  }
+
+  // since src is the only thing that changes, we don't need to re-render the component here
+  render() {
+    this._element.src = `//incr.easrng.net/badge?key=${this._siteKey}`;
   }
 }
 

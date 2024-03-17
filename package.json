@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Web Components made for Neocities sites",
   "scripts": {
-    "dev": "servor --reload",
+    "dev": "servor --reload --static",
     "prepare": "husky",
     "lint": "eslint components"
   },
