@@ -11,7 +11,7 @@ This web component is used to display a stack of shelves that hold [Webgarden](h
 1. Include the script in your HTML document's head tag:
 
 ```html
-<script type="module" src="webgarden-greenhouse.js">
+<script type="module" src="webgarden-greenhouse.js"></script>
 ```
 
 (replace `webgarden-greenhouse.js` with the path or URL to the script)

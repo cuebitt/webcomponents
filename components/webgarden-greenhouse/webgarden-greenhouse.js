@@ -12,38 +12,6 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 */
-
-/*
-    Webgarden Greenhouse Web Component
-    by cuebitt
-
-    Renders a "Webgarden Greenhouse" (see: https://wiki.melonland.net/web_gardens).
-    Uses "shelves.css" by MissMoss.
-
-    USAGE:
-
-    1. Insert the following into the head of your HTML document:
-
-        <script type="module" src="webgarden-greenhouse.js"></script>
-
-        (replace webgarden-greenhouse.js.js with the path or URL to this script)
-
-    2. Use the webgarden-greenhouse.js component anywhere in the page:
-
-        <webgarden-greenhouse.js plants="replace,with,plants"></iwebgarden-greenhouse.js>
-
-        (fill in the plants attribute with a comma separated list containing either a neocities id
-        [ex. cuebitt] or a URL to a Webgarden pot [ex https://cuebitt.neocities.org/webgarden.html].)
-*/
-
-// https://youmightnotneed.com/lodash/#chunk
-const chunk = (arr, chunkSize = 1, cache = []) => {
-  const tmp = [...arr];
-  if (chunkSize <= 0) return cache;
-  while (tmp.length) cache.push(tmp.splice(0, chunkSize));
-  return cache;
-};
-
 class WebgardenGreenhouse extends HTMLElement {
   constructor() {
     super();
@@ -99,7 +67,7 @@ class WebgardenGreenhouse extends HTMLElement {
     if (this._plants.size === 0) return;
 
     // Split the array into chunks of 3 to separate the shelves
-    const rowChunks = chunk(this._plants, 3);
+    const rowChunks = this.chunk(this._plants, 3);
 
     // Templates used to construct the rows
     const rowTmp = document.createElement("template");
@@ -174,6 +142,14 @@ class WebgardenGreenhouse extends HTMLElement {
     
     <div id="greenhouse"></div>
     `;
+  }
+
+  // https://youmightnotneed.com/lodash/#chunk
+  chunk(arr, chunkSize = 1, cache = []) {
+    const tmp = [...arr];
+    if (chunkSize <= 0) return cache;
+    while (tmp.length) cache.push(tmp.splice(0, chunkSize));
+    return cache;
   }
 }
 

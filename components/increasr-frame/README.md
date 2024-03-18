@@ -11,7 +11,7 @@ This web component is used to display a counter widget that visitors can increme
 1. Include the script in your HTML document's head tag:
 
 ```html
-<script type="module" src="increasr-frame.js">
+<script type="module" src="increasr-frame.js"></script>
 ```
 
 (replace `increasr-frame.js` with the path or URL to the script)

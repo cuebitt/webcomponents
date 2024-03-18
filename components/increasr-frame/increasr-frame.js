@@ -12,26 +12,6 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 */
-
-/*
-    incr.easrng.net Web Component
-    by cuebitt
-
-    Convenience Web Component that wraps the iframe element given by inc.easrng.net.
-    Displays a counter that site visitors can increment.
-
-    USAGE:
-
-    1. Insert the following into the head of your HTML document:
-
-        <script type="module" src="increasr-frame.js"></script>
-
-        (replace increasr-frame.js with the path or URL to this script)
-
-    2. Use the increasr-frame component anywhere in the page:
-
-        <increasr-frame site-key="yourSitekeyHere"></increasr-frame>
-*/
 class IncreasrFrame extends HTMLElement {
   constructor() {
     super();
