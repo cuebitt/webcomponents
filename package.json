@@ -1,6 +1,6 @@
 {
   "name": "webcomponents",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Web Components made for Neocities sites",
   "scripts": {
     "dev": "servor --reload --static",
