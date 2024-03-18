@@ -4,6 +4,17 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  "@preact/signals":
+    specifier: ^1.2.2
+    version: 1.2.2(preact@10.19.7)
+  preact:
+    specifier: ^10.19.7
+    version: 10.19.7
+  preact-custom-element:
+    specifier: ^4.3.0
+    version: 4.3.0(preact@10.19.7)
+
 devDependencies:
   eslint:
     specifier: ^8.57.0
@@ -155,6 +166,25 @@ packages:
       "@nodelib/fs.scandir": 2.1.5
       fastq: 1.17.1
     dev: true
+
+  /@preact/signals-core@1.5.1:
+    resolution:
+      {
+        integrity: sha512-dE6f+WCX5ZUDwXzUIWNMhhglmuLpqJhuy3X3xHrhZYI0Hm2LyQwOu0l9mdPiWrVNsE+Q7txOnJPgtIqHCYoBVA==,
+      }
+    dev: false
+
+  /@preact/signals@1.2.2(preact@10.19.7):
+    resolution:
+      {
+        integrity: sha512-ColCqdo4cRP18bAuIR4Oik5rDpiyFtPIJIygaYPMEAwTnl4buWkBOflGBSzhYyPyJfKpkwlekrvK+1pzQ2ldWw==,
+      }
+    peerDependencies:
+      preact: 10.x
+    dependencies:
+      "@preact/signals-core": 1.5.1
+      preact: 10.19.7
+    dev: false
 
   /@types/json5@0.0.29:
     resolution:
@@ -2059,6 +2089,24 @@ packages:
       }
     engines: { node: ">= 0.4" }
     dev: true
+
+  /preact-custom-element@4.3.0(preact@10.19.7):
+    resolution:
+      {
+        integrity: sha512-5hG7nQhU4e7RNfCEQklaUqYQiiyibLuJ2wbhR+E2v1m8m9NDsJok5MykW/Nx0YLLBcXr8xnkap6DwByGy2TzDA==,
+      }
+    peerDependencies:
+      preact: 10.x
+    dependencies:
+      preact: 10.19.7
+    dev: false
+
+  /preact@10.19.7:
+    resolution:
+      {
+        integrity: sha512-IJOW6cQN1fwfC17HfNOqUtAGyB8wAYshuC+jG1JiL/1+sC4yVyuA3IcF0N9vdodMJjW/lbuEF5qFsJqGNcbHbw==,
+      }
+    dev: false
 
   /prelude-ls@1.2.1:
     resolution:

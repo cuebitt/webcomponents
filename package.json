@@ -24,5 +24,10 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "dependencies": {
+    "@preact/signals": "^1.2.2",
+    "preact": "^10.19.7",
+    "preact-custom-element": "^4.3.0"
   }
 }
