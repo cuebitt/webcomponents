@@ -35,9 +35,7 @@ class LanyardStatus extends HTMLElement {
     this.userId = this.getAttribute("user-id") || "987555201969971210";
     this.updateInterval = this.getAttribute("update-interval") || 30;
 
-    this._apiData = await (
-      await fetch(`https://api.lanyard.rest/v1/users/${this.userId}`)
-    ).json();
+    await this.updateData();
 
     this.render();
 
@@ -118,49 +116,92 @@ class LanyardStatus extends HTMLElement {
       userDisc.classList.add("hide");
       userDisc.textContent = "#";
     } else {
-      userDisc.classList.remove("hide");
       userDisc.textContent = `(${this._apiData.data.discord_user.username}${this._apiData.data.discord_user.discriminator !== "0" ? "#" + this._apiData.data.discord_user.discriminator : ""})`;
     }
 
     // Set user activity if it exists
+    const activityIndicator =
+      this.shadowRoot.getElementById("activity-indicator");
+    const activityIndicatorTooltip =
+      this.shadowRoot.getElementById("activity-tooltip");
+
+    const customActivityEmoji = this.shadowRoot.getElementById(
+      "custom-activity-emoji",
+    );
     const act = this.shadowRoot.getElementById("activity-name");
+    const activityType = this.shadowRoot.getElementById("activity-type");
     const actContainer = this.shadowRoot.getElementById("activity-container");
     const rpcIndicator = this.shadowRoot.getElementById(
       "rich-presence-indicator",
     );
-    if (this._apiData.data.activities.length > 0) {
-      actContainer.classList.remove("hide");
 
-      // set "Listening", "Playing", "Streaming"
-      const activityType = this.shadowRoot.getElementById("activity-type");
-      if (this._apiData.data.listening_to_spotify) {
-        // Listening to Spotify
-        activityType.textContent = "Listening to";
-        act.textContent = "Spotify";
-      } else if (this._apiData.data.activities[0].application_id) {
-        // Streaming {details}
-        if (this._apiData.data.activities[0].type === 1) {
-          activityType.textContent = "Streaming";
-          act.textContent = this._apiData.data.activities[0].details;
-
-          // change the activity indicator and tooltip
-          this.shadowRoot
-            .getElementById("activity-indicator")
-            .setAttribute("status", "streaming");
-          this.shadowRoot.getElementById("activity-tooltip").textContent =
-            "Streaming";
-        } else {
-          // Playing {game}
-          activityType.textContent = "Playing";
-          act.textContent = this._apiData.data.activities[0].name;
-        }
-        rpcIndicator.classList.remove("hide");
-      } else {
-        rpcIndicator.classList.add("hide");
-      }
-    } else {
+    // If user has no activity, hide the activity section and return
+    if (this._apiData.data.activities.length <= 0) {
       act.textContent = "";
       actContainer.classList.add("hide");
+      return;
+    }
+
+    // User is streaming
+    if (this._apiData.data.activities[0].type === 1) {
+      activityType.textContent = "Streaming";
+      act.textContent = this._apiData.data.activities[0].details;
+
+      // change the activity indicator and tooltip
+      activityIndicator.setAttribute("status", "streaming");
+      activityIndicatorTooltip.textContent = "Streaming";
+
+      return;
+    }
+
+    // User has a custom activity
+    if (this._apiData.data.activities[0].id === "custom") {
+      act.textContent = "";
+      activityType.textContent = this._apiData.data.activities[0].state;
+
+      if ("emoji" in this._apiData.data.activities[0]) {
+        if ("id" in this._apiData.data.activities[0].emoji) {
+          const customEmojiImgUrl = `https://cdn.discordapp.com/emojis/${this._apiData.data.activities[0].emoji.id}.${this._apiData.data.activities[0].emoji.animated ? "gif" : "webp"}`;
+
+          customActivityEmoji.textContent = "";
+          customActivityEmoji.style = `background-image: url(${customEmojiImgUrl}); vertical-align: text-top;`;
+        } else {
+          customActivityEmoji.textContent =
+            this._apiData.data.activities[0].emoji.name;
+        }
+      } else {
+        customActivityEmoji.classList.add("hide");
+      }
+
+      // If custom activity but not rich presence, hide the rpc indicator
+      if (this._apiData.data.activities.length < 2) {
+        rpcIndicator.classList.add("hide");
+      }
+      return;
+    }
+
+    // None of the options below can have an emoji
+    customActivityEmoji.classList.add("hide");
+
+    // User is playing a game without Rich Presence
+    if (!("application_id" in this._apiData.data.activities[0])) {
+      rpcIndicator.classList.add("hide");
+      activityType.textContent = "Playing";
+      act.textContent = this._apiData.data.activities[0].state;
+      return;
+    }
+
+    // User is playing a game with Rich Presence
+    if ("application_id" in this._apiData.data.activities[0]) {
+      activityType.textContent = "Playing";
+      act.textContent = this._apiData.data.activities[0].name;
+      return;
+    }
+
+    // User is listening to Spotify
+    if (this._apiData.data.listening_to_spotify) {
+      activityType.textContent = "Listening to";
+      act.textContent = "Spotify";
     }
   }
 
@@ -168,8 +209,9 @@ class LanyardStatus extends HTMLElement {
     return /* html */ `
         <style>
     @import url('https://unpkg.com/css.gg@2.0.0/icons/css/menu-left.css');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
     :host {
-    font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "Open Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --bg-color: #2b2d31;
     --text-color: rgb(148, 155, 164);
     box-sizing: border-box;
@@ -211,7 +253,7 @@ class LanyardStatus extends HTMLElement {
     font-weight: bold;
     }
     .hide {
-    display: none;
+    display: none !important;
     }
     .avatar-container {
     position: relative;
@@ -277,6 +319,12 @@ class LanyardStatus extends HTMLElement {
     border-style: solid;
     border-color: black transparent transparent transparent;
     }
+    .custom-activity-emoji {
+      width: 19px;
+      height: 19px;
+      background-size: contain;
+      display: inline-block;
+    }
 </style>
 <div class="outer-container" id="lanyard-status-component">
     <div class="avatar-container">
@@ -292,6 +340,7 @@ class LanyardStatus extends HTMLElement {
             <span id="user-discriminator" class="user-discriminator"><span>
         </div>
         <div class="activity-container" id="activity-container">
+          <div id="custom-activity-emoji" class="custom-activity-emoji"></div>
             <span id="activity-type" class="activity-type">Playing</span>
             <span id="activity-name" class="activity-name"></span>
             <div id="rich-presence-indicator" class="rich-presence-indicator">
