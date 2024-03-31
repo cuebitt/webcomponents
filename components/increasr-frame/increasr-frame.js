@@ -12,54 +12,121 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 */
+
+/**
+ * @class IncreasrFrame
+ * @extends HTMLElement
+ * @description Custom element for rendering the Increasr badge
+ * @property {string} siteKey - The site key for the Increasr badge
+ * @example
+ * <increasr-frame site-key="changeme"></increasr-frame>
+ */
 class IncreasrFrame extends HTMLElement {
+  /**
+   * @constructor
+   * @description Creates an instance of IncreasrFrame
+   * @returns {void}
+   */
   constructor() {
     super();
 
-    this.attachShadow({ mode: "open" });
-
+    // used for rendering the component
+    this._template = null;
     this._element = null;
+    // this._css = null;
     this._connected = false;
-    this._siteKey = null;
+
+    // props from attributes
+    this.siteKey = null;
+
+    this.attachShadow({ mode: "open" });
   }
 
+  /**
+   * @description Lifecycle method called when the component is connected to the DOM.
+   * Initializes the HTML template, sets the props from attributes, and renders the component.
+   */
   connectedCallback() {
-    this._siteKey = this.getAttribute("site-key") || "changeme";
+    // Create component template
+    this._template = document.createElement("template");
+    this._template.innerHTML = IncreasrFrame.template();
 
-    const newTemplate = document.createElement("template");
-    newTemplate.innerHTML = IncreasrFrame.template();
-    this.shadowRoot.appendChild(newTemplate.content.cloneNode(true));
-    this._element = this.shadowRoot.getElementById("increasr-frame-inner");
+    // Init props from attributes
+    this.siteKey = this.getAttribute("site-key") || "changeme";
 
+    // Render the component
     this.render();
+
     this._connected = true;
   }
 
+  /**
+   * @description The observed attributes of the component.
+   * @returns {string[]} The attributes to observe.
+   */
   static get observedAttributes() {
     return ["site-key"];
   }
 
+  /**
+   * @description Lifecycle method called when an attribute is changed.
+   * Updates the component's props and re-renders the component.
+   * @param {string} name
+   * @param {any} oldVal
+   * @param {any} newVal
+   * @returns
+   */
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue || !this._connected) return;
 
     switch (name) {
       case "site-key":
-        this._siteKey = newValue;
-        this.render();
+        this.siteKey = newValue;
         break;
+      default:
+        return;
     }
+
+    // Re-render the component
+    this.render();
   }
 
+  /**
+   * @description The HTML template for the component.
+   * @returns {string} The HTML template for the component.
+   */
   static template() {
     return /* html */ `
-    <iframe id="increasr-frame-inner" src="//incr.easrng.net/badge?key=changeme" style="background: url(//incr.easrng.net/bg.gif)" title="increment badge" width="88" height="31" frameborder="0"></iframe>
+    <iframe
+        id="increasr-frame-inner"
+        src="//incr.easrng.net/badge?key=changeme"
+        style="background: url(//incr.easrng.net/bg.gif)"
+        title="increment badge"
+        width="88"
+        height="31"
+        frameborder="0"
+      ></iframe>
     `;
   }
 
-  // since src is the only thing that changes, we don't need to re-render the component here
+  /**
+   * Renders the component
+   * @returns {void}
+   */
   render() {
-    this._element.src = `//incr.easrng.net/badge?key=${this._siteKey}`;
+    // Clear the shadow DOM and render the component
+    this.shadowRoot.innerHTML = "";
+    this.shadowRoot.appendChild(this._template.content.cloneNode(true));
+
+    // Update reference to DOM element
+    this._element = this.shadowRoot.getElementById("increasr-frame-inner");
+
+    // Set the src attribute
+    this._element.src = `//incr.easrng.net/badge?key=${this.siteKey}`;
   }
 }
 
-customElements.define("increasr-frame", IncreasrFrame);
+// Register the custom element unless one with the same already exists
+if (!customElements.get("increasr-frame")) {
+  customElements.define("increasr-frame", IncreasrFrame);
+}

@@ -4,7 +4,7 @@
   "description": "Web Components made for Neocities sites",
   "scripts": {
     "dev": "servor --reload --static",
-    "prepare": "husky",
+    "prepare": "husky && husky install",
     "lint": "eslint components"
   },
   "author": "cuebitt",
@@ -20,9 +20,11 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "3.2.5",
+    "prettier-plugin-embed": "^0.4.15",
     "servor": "^4.0.2"
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
   }
 }

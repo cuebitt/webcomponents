@@ -35,6 +35,9 @@ devDependencies:
   prettier:
     specifier: 3.2.5
     version: 3.2.5
+  prettier-plugin-embed:
+    specifier: ^0.4.15
+    version: 0.4.15
   servor:
     specifier: ^4.0.2
     version: 4.0.2
@@ -154,6 +157,13 @@ packages:
     dependencies:
       "@nodelib/fs.scandir": 2.1.5
       fastq: 1.17.1
+    dev: true
+
+  /@types/estree@1.0.5:
+    resolution:
+      {
+        integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==,
+      }
     dev: true
 
   /@types/json5@0.0.29:
@@ -535,6 +545,18 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
+    dev: true
+
+  /dedent@1.5.1:
+    resolution:
+      {
+        integrity: sha512-+LxW+KLWxu3HW3M2w2ympwtqPrqYRzU8fqi6Fhd18fBALe15blJPI/I4+UHveMVG6lJqB4JNd4UG0S5cnVHwIg==,
+      }
+    peerDependencies:
+      babel-plugin-macros: ^3.1.0
+    peerDependenciesMeta:
+      babel-plugin-macros:
+        optional: true
     dev: true
 
   /deep-is@0.1.4:
@@ -1116,6 +1138,14 @@ packages:
     engines: { node: ">=8" }
     dependencies:
       to-regex-range: 5.0.1
+    dev: true
+
+  /find-up-simple@1.0.0:
+    resolution:
+      {
+        integrity: sha512-q7Us7kcjj2VMePAa02hDAF6d+MzsdsAWEwYyOpwUtlerRBkOEPBCRZrAV4XfcSN8fHAgaD0hP7miwoay6DCprw==,
+      }
+    engines: { node: ">=18" }
     dev: true
 
   /find-up@5.0.0:
@@ -1790,6 +1820,13 @@ packages:
       }
     dev: true
 
+  /micro-memoize@4.1.2:
+    resolution:
+      {
+        integrity: sha512-+HzcV2H+rbSJzApgkj0NdTakkC+bnyeiUxgT6/m7mjcz1CmM22KYFKp+EVj1sWe4UYcnriJr5uqHQD/gMHLD+g==,
+      }
+    dev: true
+
   /micromatch@4.0.5:
     resolution:
       {
@@ -1986,6 +2023,16 @@ packages:
       p-limit: 3.1.0
     dev: true
 
+  /package-up@5.0.0:
+    resolution:
+      {
+        integrity: sha512-MQEgDUvXCa3sGvqHg3pzHO8e9gqTCMPVrWUko3vPQGntwegmFo52mZb2abIVTjFnUcW0BcPz0D93jV5Cas1DWA==,
+      }
+    engines: { node: ">=18" }
+    dependencies:
+      find-up-simple: 1.0.0
+    dev: true
+
   /parent-module@1.0.1:
     resolution:
       {
@@ -2066,6 +2113,22 @@ packages:
         integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==,
       }
     engines: { node: ">= 0.8.0" }
+    dev: true
+
+  /prettier-plugin-embed@0.4.15:
+    resolution:
+      {
+        integrity: sha512-9pZVIp3bw2jw+Ge+iAMZ4j+sIVC9cPruZ93H2tj5Wa/3YDFDJ/uYyVWdUGfcFUnv28drhW2Bmome9xSGXsPKOw==,
+      }
+    dependencies:
+      "@types/estree": 1.0.5
+      dedent: 1.5.1
+      micro-memoize: 4.1.2
+      package-up: 5.0.0
+      tiny-jsonc: 1.0.1
+      type-fest: 4.14.0
+    transitivePeerDependencies:
+      - babel-plugin-macros
     dev: true
 
   /prettier@3.2.5:
@@ -2449,6 +2512,13 @@ packages:
       }
     dev: true
 
+  /tiny-jsonc@1.0.1:
+    resolution:
+      {
+        integrity: sha512-ik6BCxzva9DoiEfDX/li0L2cWKPPENYvixUprFdl3YPi4bZZUhDnNI9YUkacrv+uIG90dnxR5mNqaoD6UhD6Bw==,
+      }
+    dev: true
+
   /to-regex-range@5.0.1:
     resolution:
       {
@@ -2495,6 +2565,14 @@ packages:
         integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==,
       }
     engines: { node: ">=14.16" }
+    dev: true
+
+  /type-fest@4.14.0:
+    resolution:
+      {
+        integrity: sha512-on5/Cw89wwqGZQu+yWO0gGMGu8VNxsaW9SB2HE8yJjllEk7IDTwnSN1dUVldYILhYPN5HzD7WAaw2cc/jBfn0Q==,
+      }
+    engines: { node: ">=16" }
     dev: true
 
   /typed-array-buffer@1.0.2:
