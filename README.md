@@ -10,8 +10,6 @@ Most Neocities sites are handwritten without using a build tool like most other 
 
 See the `README.md` file in each subdirectory in the `components` folder of this repository. You can download the Javascript file and upload it directly to your site, or use a CDN like [JSDelivr](https://www.jsdelivr.com) to include it remotely.
 
-You can select any of the components in this repository and quickly generate CDN links for your own website at [my Neocities site](https://cuebitt.neocities.org/shop)!
-
 # Attribution
 
 This repository's contents are distributed under the MIT License. A copy of the MIT license is included in each script, so you don't need to do anything extra to credit this project.

@@ -1,6 +1,6 @@
 class ThemeSwitcher extends HTMLElement {
-  static get template() {
-    return /* html */ `
+	static get template() {
+		return /* html */ `
 <button
         id="theme-switcher-btn"
         data-theme="system"
@@ -43,10 +43,10 @@ class ThemeSwitcher extends HTMLElement {
         </svg>
       </button>
 `;
-  }
+	}
 
-  static get css() {
-    return /* css */ `
+	static get css() {
+		return /* css */ `
       #theme-switcher-btn {
         padding: 0.5rem !important;
         width: fit-content !important;
@@ -71,74 +71,74 @@ class ThemeSwitcher extends HTMLElement {
         display: initial;
       }
     `;
-  }
+	}
 
-  constructor() {
-    super();
-    // attach shadow root
-    this.attachShadow({ mode: "open" });
+	constructor() {
+		super();
+		// attach shadow root
+		this.attachShadow({ mode: "open" });
 
-    const style = new CSSStyleSheet();
-    style.replaceSync(ThemeSwitcher.css);
-    this.shadowRoot.adoptedStyleSheets = [style];
+		const style = new CSSStyleSheet();
+		style.replaceSync(ThemeSwitcher.css);
+		this.shadowRoot.adoptedStyleSheets = [style];
 
-    // add template to shadow root
-    const template = document.createElement("template");
-    template.innerHTML = ThemeSwitcher.template;
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+		// add template to shadow root
+		const template = document.createElement("template");
+		template.innerHTML = ThemeSwitcher.template;
+		this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    this.btn = this.shadowRoot.querySelector("#theme-switcher-btn");
-  }
+		this.btn = this.shadowRoot.querySelector("#theme-switcher-btn");
+	}
 
-  connectedCallback() {
-    this.setAttribute("theme", "system");
-    this.btn.addEventListener("click", this.rotateTheme.bind(this));
-  }
+	connectedCallback() {
+		this.setAttribute("theme", "system");
+		this.btn.addEventListener("click", this.rotateTheme.bind(this));
+	}
 
-  static get observedAttributes() {
-    return ["theme"];
-  }
+	static get observedAttributes() {
+		return ["theme"];
+	}
 
-  attributeChangedCallback(name, oldVal, newVal) {
-    if (oldVal === newVal) return;
+	attributeChangedCallback(name, oldVal, newVal) {
+		if (oldVal === newVal) return;
 
-    switch (name) {
-      case "theme":
-        if (["light", "dark", "system"].includes(newVal)) {
-          this.btn.setAttribute("data-theme", newVal);
-        } else {
-          this.btn.setAttribute("data-theme", "system");
-        }
-        break;
-    }
-  }
+		switch (name) {
+			case "theme":
+				if (["light", "dark", "system"].includes(newVal)) {
+					this.btn.setAttribute("data-theme", newVal);
+				} else {
+					this.btn.setAttribute("data-theme", "system");
+				}
+				break;
+		}
+	}
 
-  rotateTheme() {
-    // move to the next theme
-    switch (this.getAttribute("theme")) {
-      case "light":
-        this.setAttribute("theme", "dark");
-        break;
-      case "dark":
-        this.setAttribute("theme", "system");
-        break;
-      case "system":
-        this.setAttribute("theme", "light");
-        break;
-      default:
-        this.setAttribute("theme", "system");
-        break;
-    }
+	rotateTheme() {
+		// move to the next theme
+		switch (this.getAttribute("theme")) {
+			case "light":
+				this.setAttribute("theme", "dark");
+				break;
+			case "dark":
+				this.setAttribute("theme", "system");
+				break;
+			case "system":
+				this.setAttribute("theme", "light");
+				break;
+			default:
+				this.setAttribute("theme", "system");
+				break;
+		}
 
-    // emit theme changed event
-    this.dispatchEvent(
-      new CustomEvent("themechange", {
-        detail: {
-          theme: this.getAttribute("theme"),
-        },
-      }),
-    );
-  }
+		// emit theme changed event
+		this.dispatchEvent(
+			new CustomEvent("themechange", {
+				detail: {
+					theme: this.getAttribute("theme"),
+				},
+			}),
+		);
+	}
 }
 
 window.customElements.define("theme-switcher", ThemeSwitcher);

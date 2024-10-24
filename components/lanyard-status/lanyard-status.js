@@ -23,258 +23,258 @@ PERFORMANCE OF THIS SOFTWARE.
  * <lanyard-status user-id="987555201969971210" update-interval="30"></lanyard-status>
  */
 class LanyardStatus extends HTMLElement {
-  /**
-   * @constructor
-   * @description Creates an instance of LanyardStatus.
-   * @returns {void}
-   */
-  constructor() {
-    super();
+	/**
+	 * @constructor
+	 * @description Creates an instance of LanyardStatus.
+	 * @returns {void}
+	 */
+	constructor() {
+		super();
 
-    // used for rendering
-    this._template = null;
-    this._css = null;
-    this._element = null;
-    this._connected = false;
+		// used for rendering
+		this._template = null;
+		this._css = null;
+		this._element = null;
+		this._connected = false;
 
-    // internal state
-    this._interval = null;
-    this._apiData = null;
+		// internal state
+		this._interval = null;
+		this._apiData = null;
 
-    // props from attributes
-    this.userId = null;
-    this.updateInterval = null;
+		// props from attributes
+		this.userId = null;
+		this.updateInterval = null;
 
-    this.attachShadow({ mode: "open" });
-  }
+		this.attachShadow({ mode: "open" });
+	}
 
-  /**
-   * @description The observed attributes of the component.
-   * @returns {string[]} The attributes to observe.
-   */
-  static get observedAttributes() {
-    return ["user-id", "update-interval"];
-  }
+	/**
+	 * @description The observed attributes of the component.
+	 * @returns {string[]} The attributes to observe.
+	 */
+	static get observedAttributes() {
+		return ["user-id", "update-interval"];
+	}
 
-  /**
-   * @description Lifecycle method called when the component is connected to the DOM.
-   * Initializes the HTML template, sets the props from attributes, fetches data from Lanyard's API, and renders the component.
-   */
-  async connectedCallback() {
-    // Create CSS Stylesheet
-    this._css = new CSSStyleSheet();
-    this._css.replaceSync(LanyardStatus.css());
+	/**
+	 * @description Lifecycle method called when the component is connected to the DOM.
+	 * Initializes the HTML template, sets the props from attributes, fetches data from Lanyard's API, and renders the component.
+	 */
+	async connectedCallback() {
+		// Create CSS Stylesheet
+		this._css = new CSSStyleSheet();
+		this._css.replaceSync(LanyardStatus.css());
 
-    // Create component template
-    this._template = document.createElement("template");
-    this._template.innerHTML = LanyardStatus.template();
+		// Create component template
+		this._template = document.createElement("template");
+		this._template.innerHTML = LanyardStatus.template();
 
-    // Add stylesheet to Shadow DOM
-    this.shadowRoot.adoptedStyleSheets = [this._css];
+		// Add stylesheet to Shadow DOM
+		this.shadowRoot.adoptedStyleSheets = [this._css];
 
-    // Init props from attributes
-    this.userId = this.getAttribute("user-id") || "987555201969971210";
-    this.updateInterval = this.getAttribute("update-interval") || 30;
+		// Init props from attributes
+		this.userId = this.getAttribute("user-id") || "987555201969971210";
+		this.updateInterval = this.getAttribute("update-interval") || 30;
 
-    // Fetch data from Lanyard's API
-    await this.updateData();
+		// Fetch data from Lanyard's API
+		await this.updateData();
 
-    // Render the component
-    this.render();
+		// Render the component
+		this.render();
 
-    // Set interval to update data
-    this._interval = setInterval(() => {
-      this.updateData().then(this.render());
-    }, this.updateInterval * 1000);
+		// Set interval to update data
+		this._interval = setInterval(() => {
+			this.updateData().then(this.render());
+		}, this.updateInterval * 1000);
 
-    this._connected = true;
-  }
+		this._connected = true;
+	}
 
-  /**
-   * @description Lifecycle method called when the component is disconnected from the DOM.
-   * Clears the update interval.
-   * @returns {void}
-   */
-  disconnectedCallback() {
-    clearInterval(this._interval);
-  }
+	/**
+	 * @description Lifecycle method called when the component is disconnected from the DOM.
+	 * Clears the update interval.
+	 * @returns {void}
+	 */
+	disconnectedCallback() {
+		clearInterval(this._interval);
+	}
 
-  /**
-   * @description Lifecycle method called when an attribute is changed.
-   * Updates the component's props and re-renders the component.
-   * @param {string} name
-   * @param {any} oldVal
-   * @param {any} newVal
-   * @returns
-   */
-  async attributeChangedCallback(name, oldVal, newVal) {
-    if (!this._connected || oldVal === newVal) return;
+	/**
+	 * @description Lifecycle method called when an attribute is changed.
+	 * Updates the component's props and re-renders the component.
+	 * @param {string} name
+	 * @param {any} oldVal
+	 * @param {any} newVal
+	 * @returns
+	 */
+	async attributeChangedCallback(name, oldVal, newVal) {
+		if (!this._connected || oldVal === newVal) return;
 
-    switch (name) {
-      case "user-id":
-        this.userId = newVal;
-        break;
-      case "update-interval":
-        this.updateInterval = newVal;
+		switch (name) {
+			case "user-id":
+				this.userId = newVal;
+				break;
+			case "update-interval":
+				this.updateInterval = newVal;
 
-        // Clear the old interval
-        clearInterval(this._interval);
+				// Clear the old interval
+				clearInterval(this._interval);
 
-        // Update the data and render the component after every new interval
-        this._interval = setInterval(() => {
-          this.updateData().then(this.render());
-        }, this.updateInterval * 1000);
-        break;
-      default:
-        return;
-    }
+				// Update the data and render the component after every new interval
+				this._interval = setInterval(() => {
+					this.updateData().then(this.render());
+				}, this.updateInterval * 1000);
+				break;
+			default:
+				return;
+		}
 
-    // Re-render the component (skipped if attribute doesn't match any case above)
-    this.render();
-  }
+		// Re-render the component (skipped if attribute doesn't match any case above)
+		this.render();
+	}
 
-  /**
-   * @description Fetches data from Lanyard's API and sets the _apiData property.
-   * @returns {Promise<void>}
-   */
-  async updateData() {
-    this._apiData = await (
-      await fetch(`https://api.lanyard.rest/v1/users/${this.userId}`)
-    ).json();
-  }
+	/**
+	 * @description Fetches data from Lanyard's API and sets the _apiData property.
+	 * @returns {Promise<void>}
+	 */
+	async updateData() {
+		this._apiData = await (
+			await fetch(`https://api.lanyard.rest/v1/users/${this.userId}`)
+		).json();
+	}
 
-  /**
-   * @description Renders the component with the fetched data.
-   * @returns {void}
-   */
-  render() {
-    // Clear the shadow DOM and re-render the component
-    this.shadowRoot.innerHTML = "";
-    this.shadowRoot.appendChild(this._template.content.cloneNode(true));
+	/**
+	 * @description Renders the component with the fetched data.
+	 * @returns {void}
+	 */
+	render() {
+		// Clear the shadow DOM and re-render the component
+		this.shadowRoot.innerHTML = "";
+		this.shadowRoot.appendChild(this._template.content.cloneNode(true));
 
-    // Update reference to dom element
-    this._element = this.shadowRoot.getElementById("lanyard-status-component");
+		// Update reference to dom element
+		this._element = this.shadowRoot.getElementById("lanyard-status-component");
 
-    // Set user profile photo
-    this.shadowRoot.getElementById("pfp-img").src =
-      `https://api.lanyard.rest/${this.userId}.webp`;
+		// Set user profile photo
+		this.shadowRoot.getElementById("pfp-img").src =
+			`https://api.lanyard.rest/${this.userId}.webp`;
 
-    // Set user activity type
-    this.shadowRoot
-      .getElementById("activity-indicator")
-      .setAttribute("status", this._apiData.data.discord_status);
-    this.shadowRoot.getElementById("activity-tooltip").textContent =
-      LanyardStatus.activityTypes()[this._apiData.data.discord_status];
+		// Set user activity type
+		this.shadowRoot
+			.getElementById("activity-indicator")
+			.setAttribute("status", this._apiData.data.discord_status);
+		this.shadowRoot.getElementById("activity-tooltip").textContent =
+			LanyardStatus.activityTypes()[this._apiData.data.discord_status];
 
-    // User display name
-    this.shadowRoot.getElementById("display-name").textContent =
-      this._apiData.data.discord_user.global_name;
+		// User display name
+		this.shadowRoot.getElementById("display-name").textContent =
+			this._apiData.data.discord_user.global_name;
 
-    // Username if !== global display name, discriminator if present
-    const userDisc = this.shadowRoot.getElementById("user-discriminator");
-    if (
-      this._apiData.data.discord_user.discriminator === "0" &&
-      this._apiData.data.discord_user.username ===
-        this._apiData.data.discord_user.global_name
-    ) {
-      userDisc.classList.add("hide");
-      userDisc.textContent = "#";
-    } else {
-      userDisc.textContent = `(${this._apiData.data.discord_user.username}${this._apiData.data.discord_user.discriminator !== "0" ? "#" + this._apiData.data.discord_user.discriminator : ""})`;
-    }
+		// Username if !== global display name, discriminator if present
+		const userDisc = this.shadowRoot.getElementById("user-discriminator");
+		if (
+			this._apiData.data.discord_user.discriminator === "0" &&
+			this._apiData.data.discord_user.username ===
+				this._apiData.data.discord_user.global_name
+		) {
+			userDisc.classList.add("hide");
+			userDisc.textContent = "#";
+		} else {
+			userDisc.textContent = `(${this._apiData.data.discord_user.username}${this._apiData.data.discord_user.discriminator !== "0" ? `#${this._apiData.data.discord_user.discriminator}` : ""})`;
+		}
 
-    // Set user activity if it exists
-    const activityIndicator =
-      this.shadowRoot.getElementById("activity-indicator");
-    const activityIndicatorTooltip =
-      this.shadowRoot.getElementById("activity-tooltip");
+		// Set user activity if it exists
+		const activityIndicator =
+			this.shadowRoot.getElementById("activity-indicator");
+		const activityIndicatorTooltip =
+			this.shadowRoot.getElementById("activity-tooltip");
 
-    const customActivityEmoji = this.shadowRoot.getElementById(
-      "custom-activity-emoji",
-    );
-    const act = this.shadowRoot.getElementById("activity-name");
-    const activityType = this.shadowRoot.getElementById("activity-type");
-    const actContainer = this.shadowRoot.getElementById("activity-container");
-    const rpcIndicator = this.shadowRoot.getElementById(
-      "rich-presence-indicator",
-    );
+		const customActivityEmoji = this.shadowRoot.getElementById(
+			"custom-activity-emoji",
+		);
+		const act = this.shadowRoot.getElementById("activity-name");
+		const activityType = this.shadowRoot.getElementById("activity-type");
+		const actContainer = this.shadowRoot.getElementById("activity-container");
+		const rpcIndicator = this.shadowRoot.getElementById(
+			"rich-presence-indicator",
+		);
 
-    // If user has no activity, hide the activity section and return
-    if (this._apiData.data.activities.length <= 0) {
-      act.textContent = "";
-      actContainer.classList.add("hide");
-      return;
-    }
+		// If user has no activity, hide the activity section and return
+		if (this._apiData.data.activities.length <= 0) {
+			act.textContent = "";
+			actContainer.classList.add("hide");
+			return;
+		}
 
-    // User is streaming
-    if (this._apiData.data.activities[0].type === 1) {
-      activityType.textContent = "Streaming";
-      act.textContent = this._apiData.data.activities[0].details;
+		// User is streaming
+		if (this._apiData.data.activities[0].type === 1) {
+			activityType.textContent = "Streaming";
+			act.textContent = this._apiData.data.activities[0].details;
 
-      // change the activity indicator and tooltip
-      activityIndicator.setAttribute("status", "streaming");
-      activityIndicatorTooltip.textContent = "Streaming";
+			// change the activity indicator and tooltip
+			activityIndicator.setAttribute("status", "streaming");
+			activityIndicatorTooltip.textContent = "Streaming";
 
-      return;
-    }
+			return;
+		}
 
-    // User has a custom activity
-    if (this._apiData.data.activities[0].id === "custom") {
-      act.textContent = "";
-      activityType.textContent = this._apiData.data.activities[0].state;
+		// User has a custom activity
+		if (this._apiData.data.activities[0].id === "custom") {
+			act.textContent = "";
+			activityType.textContent = this._apiData.data.activities[0].state;
 
-      if ("emoji" in this._apiData.data.activities[0]) {
-        if ("id" in this._apiData.data.activities[0].emoji) {
-          const customEmojiImgUrl = `https://cdn.discordapp.com/emojis/${this._apiData.data.activities[0].emoji.id}.${this._apiData.data.activities[0].emoji.animated ? "gif" : "webp"}`;
+			if ("emoji" in this._apiData.data.activities[0]) {
+				if ("id" in this._apiData.data.activities[0].emoji) {
+					const customEmojiImgUrl = `https://cdn.discordapp.com/emojis/${this._apiData.data.activities[0].emoji.id}.${this._apiData.data.activities[0].emoji.animated ? "gif" : "webp"}`;
 
-          customActivityEmoji.textContent = "";
-          customActivityEmoji.style = `background-image: url(${customEmojiImgUrl}); vertical-align: text-top;`;
-        } else {
-          customActivityEmoji.textContent =
-            this._apiData.data.activities[0].emoji.name;
-        }
-      } else {
-        customActivityEmoji.classList.add("hide");
-      }
+					customActivityEmoji.textContent = "";
+					customActivityEmoji.style = `background-image: url(${customEmojiImgUrl}); vertical-align: text-top;`;
+				} else {
+					customActivityEmoji.textContent =
+						this._apiData.data.activities[0].emoji.name;
+				}
+			} else {
+				customActivityEmoji.classList.add("hide");
+			}
 
-      // If custom activity but not rich presence, hide the rpc indicator
-      if (this._apiData.data.activities.length < 2) {
-        rpcIndicator.classList.add("hide");
-      }
-      return;
-    }
+			// If custom activity but not rich presence, hide the rpc indicator
+			if (this._apiData.data.activities.length < 2) {
+				rpcIndicator.classList.add("hide");
+			}
+			return;
+		}
 
-    // None of the options below can have an emoji
-    customActivityEmoji.classList.add("hide");
+		// None of the options below can have an emoji
+		customActivityEmoji.classList.add("hide");
 
-    // User is playing a game without Rich Presence
-    if (!("application_id" in this._apiData.data.activities[0])) {
-      rpcIndicator.classList.add("hide");
-      activityType.textContent = "Playing";
-      act.textContent = this._apiData.data.activities[0].state;
-      return;
-    }
+		// User is playing a game without Rich Presence
+		if (!("application_id" in this._apiData.data.activities[0])) {
+			rpcIndicator.classList.add("hide");
+			activityType.textContent = "Playing";
+			act.textContent = this._apiData.data.activities[0].state;
+			return;
+		}
 
-    // User is playing a game with Rich Presence
-    if ("application_id" in this._apiData.data.activities[0]) {
-      activityType.textContent = "Playing";
-      act.textContent = this._apiData.data.activities[0].name;
-      return;
-    }
+		// User is playing a game with Rich Presence
+		if ("application_id" in this._apiData.data.activities[0]) {
+			activityType.textContent = "Playing";
+			act.textContent = this._apiData.data.activities[0].name;
+			return;
+		}
 
-    // User is listening to Spotify
-    if (this._apiData.data.listening_to_spotify) {
-      activityType.textContent = "Listening to";
-      act.textContent = "Spotify";
-    }
-  }
+		// User is listening to Spotify
+		if (this._apiData.data.listening_to_spotify) {
+			activityType.textContent = "Listening to";
+			act.textContent = "Spotify";
+		}
+	}
 
-  /**
-   * @description The CSS styles for the component.
-   * @returns {string} The CSS styles for the component.
-   */
-  static css() {
-    return /* css */ `
+	/**
+	 * @description The CSS styles for the component.
+	 * @returns {string} The CSS styles for the component.
+	 */
+	static css() {
+		return /* css */ `
       @import url("https://unpkg.com/css.gg@2.0.0/icons/css/menu-left.css");
       @import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
       :host {
@@ -394,14 +394,14 @@ class LanyardStatus extends HTMLElement {
         display: inline-block;
       }
     `;
-  }
+	}
 
-  /**
-   * @description The HTML template for the component.
-   * @returns {string} The HTML template for the component.
-   */
-  static template() {
-    return /* html */ `
+	/**
+	 * @description The HTML template for the component.
+	 * @returns {string} The HTML template for the component.
+	 */
+	static template() {
+		return /* html */ `
 
       <div
         class="outer-container"
@@ -449,23 +449,23 @@ class LanyardStatus extends HTMLElement {
         </div>
       </div>
         `;
-  }
+	}
 
-  /**
-   * @description The activity types and their corresponding names.
-   * @returns {Object} The activity types and their corresponding names.
-   */
-  static activityTypes() {
-    return {
-      online: "Online",
-      idle: "Idle",
-      dnd: "Do Not Disturb",
-      offline: "Offline",
-    };
-  }
+	/**
+	 * @description The activity types and their corresponding names.
+	 * @returns {Object} The activity types and their corresponding names.
+	 */
+	static activityTypes() {
+		return {
+			online: "Online",
+			idle: "Idle",
+			dnd: "Do Not Disturb",
+			offline: "Offline",
+		};
+	}
 }
 
 // Register the custom element unless one with the same already exists
 if (!window.customElements.get("lanyard-status")) {
-  window.customElements.define("lanyard-status", LanyardStatus);
+	window.customElements.define("lanyard-status", LanyardStatus);
 }

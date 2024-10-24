@@ -1,30 +1,23 @@
 {
   "name": "webcomponents",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Web Components made for Neocities sites",
   "scripts": {
-    "dev": "servor --reload --static",
-    "prepare": "husky && husky install",
-    "lint": "eslint components"
+    "prepare": "husky",
+    "lint": "biome lint --fix components",
+    "format": "biome format --write components"
   },
   "author": "cuebitt",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-semistandard": "^17.0.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.0.0",
-    "eslint-plugin-promise": "^6.0.0",
+    "@biomejs/biome": "1.9.4",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "prettier": "3.2.5",
-    "prettier-plugin-embed": "^0.4.15",
-    "servor": "^4.0.2"
+    "lint-staged": "^15.2.2"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
+    "*.js": [
+      "biome lint --fix",
+      "biome format --write"
+    ]
   }
 }
